@@ -1,0 +1,1 @@
+includes: ['layer:bigdata', 'interface:mysql', 'interface:hadoop-plugin']

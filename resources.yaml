@@ -1,0 +1,17 @@
+options:
+  output_dir: /home/ubuntu/resources
+resources:
+  pathlib:
+    pypi: path.py>=7.0
+  jujubigdata:
+    pypi: git+https://github.com/johnsca/jujubigdata.git#egg=jujubigdata
+    skip_hash: true
+optional_resources:
+  hive-ppc64le:
+    url: https://s3.amazonaws.com/jujubigdata/apache/ppc64le/apache-hive-0.13.0-bin-4c83564.tar.gz
+    hash: 4c835644eb72a08df059b86c45fb159b95df08e831334cb57e24654ef078e7ee
+    hash_type: sha256
+  hive-x86_64:
+    url: https://s3.amazonaws.com/jujubigdata/apache/x86_64/apache-hive-1.0.0-bin-b8e121f.tar.gz
+    hash: b8e121f435defeb94d810eb6867d2d1c27973e4a3b4099f2716dbffafb274184
+    hash_type: sha256
