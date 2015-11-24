@@ -45,7 +45,7 @@ def missing_mysql():
 @when('database.connected')
 @when_not('database.available')
 def waiting_mysql(mysql):
-    status_set('waiting', 'Waiting for MySQL to become ready')
+    hookenv.status_set('waiting', 'Waiting for MySQL to become ready')
 
 
 @when('hive.installed', 'hadoop.yarn.ready', 'hadoop.hdfs.ready', 'database.available')

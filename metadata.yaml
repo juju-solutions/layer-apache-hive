@@ -10,11 +10,11 @@ description: |
   Learn more at http://hive.apache.org
 tags: ["bigdata", "hadoop", "apache"]
 provides:
-  hadoop-plugin:
+  hadoop:
     interface: hadoop-plugin
     scope: container
   hive:
     interface: hive
 requires:
-  db:
+  database:
     interface: mysql
