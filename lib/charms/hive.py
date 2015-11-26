@@ -1,6 +1,8 @@
+import time
 from glob import glob
 from path import Path
 from subprocess import CalledProcessError
+from subprocess import Popen
 
 import jujuresources
 from charmhelpers.core import hookenv
@@ -75,16 +77,15 @@ class Hive(object):
         utils.run_as('hive', 'hdfs', 'dfs', '-mkdir', '-p', '/user/hive/warehouse')
 
     # called during config-changed events
-    def configure_hive(self):
+    def configure_hive(self, mysql):
         config = hookenv.config()
         hive_site = self.dist_config.path('hive_conf') / 'hive-site.xml'
         with utils.xmlpropmap_edit_in_place(hive_site) as props:
-            mysql = unitdata.kv().get('relations.ready')['db'].values()[0]
             props['javax.jdo.option.ConnectionURL'] = "jdbc:mysql://{}/{}".format(
-                mysql['host'], mysql['database']
+                mysql.host(), mysql.database()
             )
-            props['javax.jdo.option.ConnectionUserName'] = mysql['user']
-            props['javax.jdo.option.ConnectionPassword'] = mysql['password']
+            props['javax.jdo.option.ConnectionUserName'] = mysql.user()
+            props['javax.jdo.option.ConnectionPassword'] = mysql.password()
             props['javax.jdo.option.ConnectionDriverName'] = "com.mysql.jdbc.Driver"
             props['hive.hwi.war.file'] = "lib/hive-hwi-%s.jar" % self.HIVE_VERSION[self.cpu_arch]
 
