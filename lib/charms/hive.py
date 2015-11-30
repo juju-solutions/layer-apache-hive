@@ -1,4 +1,6 @@
 import time
+import os
+import signal
 from glob import glob
 from path import Path
 from subprocess import CalledProcessError
@@ -47,9 +49,6 @@ class Hive(object):
         hive_conf = self.dist_config.path('hive_conf')
         hive_conf.rmtree_p()
         default_conf.copytree(hive_conf)
-        # Now remove the conf included in the tarball and symlink our real conf
-        default_conf.rmtree_p()
-        hive_conf.symlink(default_conf)
 
         # Configure immutable bits
         hive_bin = self.dist_config.path('hive') / 'bin'
@@ -81,8 +80,8 @@ class Hive(object):
         config = hookenv.config()
         hive_site = self.dist_config.path('hive_conf') / 'hive-site.xml'
         with utils.xmlpropmap_edit_in_place(hive_site) as props:
-            props['javax.jdo.option.ConnectionURL'] = "jdbc:mysql://{}/{}".format(
-                mysql.host(), mysql.database()
+            props['javax.jdo.option.ConnectionURL'] = "jdbc:mysql://{}:{}/{}".format(
+                mysql.host(), mysql.port(), mysql.database()
             )
             props['javax.jdo.option.ConnectionUserName'] = mysql.user()
             props['javax.jdo.option.ConnectionPassword'] = mysql.password()
@@ -99,6 +98,11 @@ class Hive(object):
         if not unitdata.kv().get('hive.schema.initialized'):
             utils.run_as('hive', 'schematool', '-initSchema', '-dbType', 'mysql')
             unitdata.kv().set('hive.schema.initialized', True)
+
+    def new_db_connection(self):
+        if unitdata.kv().get('hive.schema.initialized'):
+            unitdata.kv().set('hive.schema.initialized', False)
+    
 
     def run_bg(self, user, command, *args):
         """

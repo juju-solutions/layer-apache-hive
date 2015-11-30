@@ -1,5 +1,5 @@
 from charms.reactive import when, when_not
-from charms.reactive import set_state, remove_state
+from charms.reactive import set_state, remove_state, is_state
 from charmhelpers.core import hookenv
 
 def dist_config():
@@ -11,6 +11,15 @@ def dist_config():
     return dist_config.value
 
 @when('bootstrapped')
+@when_not('hive.valid')
+def validate_hive(*args):
+    # Hive cannot handle - in the metastore db name and mysql uses the service name to name the db
+    if "-" in hookenv.service_name():
+        hookenv.status_set('blocked', 'Service name should not contain -. Redeploy with a different name.')
+    else:
+        set_state('hive.valid')
+
+@when('hive.valid')
 @when_not('hive.installed')
 def install_hive(*args):
     from charms.hive import Hive  # in lib/charms; not available until after bootstrap
@@ -21,22 +30,26 @@ def install_hive(*args):
         hive.install()
         set_state('hive.installed')
 
-@when('bootstrapped')
+@when('hive.valid')
 @when_not('database.connected')
 def missing_mysql():
+    from charms.hive import Hive  # in lib/charms; not available until after bootstrap
+
+    hive = Hive(dist_config())
+    hive.new_db_connection()
     hookenv.status_set('blocked', 'Waiting for relation to database')
 
-@when('bootstrapped', 'database.connected')
+@when('hive.valid', 'database.connected')
 @when_not('database.available')
 def waiting_mysql(mysql):
     hookenv.status_set('waiting', 'Waiting for database to become ready')
 
-@when('bootstrapped')
+@when('hive.valid')
 @when_not('hadoop.connected')
 def missing_hadoop():
     hookenv.status_set('blocked', 'Waiting for relation to Hadoop')
 
-@when('bootstrapped', 'hadoop.connected')
+@when('hive.valid', 'hadoop.connected')
 @when_not('hadoop.ready')
 def waiting_hadoop(hadoop):
     hookenv.status_set('waiting', 'Waiting for Hadoop to become ready')
@@ -66,4 +79,12 @@ def stop_hive():
     hive.stop()
     remove_state('hive.started')
 
+    if not is_state('database.available') and not is_state('hadoop.ready'):
+        hookenv.status_set('blocked', 'Waiting for haddop and database connections')
+    elif not is_state('database.available'):
+        hookenv.status_set('blocked', 'Waiting for database connection')
+    elif not is_state('hadoop.ready'):
+        hookenv.status_set('blocked', 'Waiting for Haddop connection')
+    else:
+        hookenv.status_set('blocked', 'Hive stopped')
 
