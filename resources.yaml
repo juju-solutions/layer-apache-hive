@@ -1,11 +1,5 @@
 options:
   output_dir: /home/ubuntu/resources
-resources:
-  pathlib:
-    pypi: path.py>=7.0
-  jujubigdata:
-    pypi: git+https://github.com/johnsca/jujubigdata.git#egg=jujubigdata
-    skip_hash: true
 optional_resources:
   hive-ppc64le:
     url: https://s3.amazonaws.com/jujubigdata/apache/ppc64le/apache-hive-0.13.0-bin-4c83564.tar.gz
