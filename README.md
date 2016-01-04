@@ -10,33 +10,24 @@ This charm provides the Hive command line interface and the HiveServer2 service.
 
 
 ## Usage
-This charm leverages our pluggable Hadoop model with the `hadoop-plugin`
-interface. This means that you will need to deploy a base Apache Hadoop cluster
-to run Hive. The suggested deployment method is to use the
-[apache-analytics-sql](https://jujucharms.com/apache-analytics-sql/)
-bundle. This will deploy the Apache Hadoop platform with a single Apache Hive
-unit that communicates with the cluster by relating to the
-`apache-hadoop-plugin` subordinate charm:
+This charm is uses the hadoob base layer and the hdfs interface to pull its dependencies
+and act as a client to a hadoop namenode:
 
-    juju quickstart apache-analytics-sql
+You may manually deploy the recommended environment as follows:
 
-Alternatively, you may manually deploy the recommended environment as follows:
+    juju deploy apache-hadoop-datanode datanode
+    juju deploy apache-hadoop-namenode namenode
+    juju deploy apache-hadoop-nodemanager nodemgr
+    juju deploy apache-hadoop-resourcemanager resourcemgr
 
-    juju deploy apache-hadoop-hdfs-master hdfs-master
-    juju deploy apache-hadoop-yarn-master yarn-master
-    juju deploy apache-hadoop-compute-slave compute-slave
-    juju deploy apache-hadoop-plugin plugin
-    juju deploy apache-hive hive
+    juju add-relation namenode datanode
+    juju add-relation resourcemgr nodemgr
+    juju add-relation resourcemgr namenode
 
     juju deploy mysql
     juju set mysql binlog-format=ROW
 
-    juju add-relation yarn-master hdfs-master
-    juju add-relation compute-slave yarn-master
-    juju add-relation compute-slave hdfs-master
-    juju add-relation plugin yarn-master
-    juju add-relation plugin hdfs-master
-    juju add-relation hive plugin
+    juju add-relation hive namenode
     juju add-relation hive mysql
 
 Please note the special configuration for the mysql charm above; MySQL must be

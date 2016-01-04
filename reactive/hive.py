@@ -4,6 +4,8 @@ from charms.reactive import set_state, remove_state, is_state
 from charmhelpers.core import hookenv
 from subprocess import check_call
 from charmhelpers.fetch import apt_install
+from charms.hadoop import get_hadoop_base
+from jujubigdata.handlers import HDFS
 
 def dist_config():
     from jujubigdata.utils import DistConfig  # no available until after bootstrap
@@ -63,32 +65,43 @@ def waiting_mysql(mysql):
     hookenv.status_set('waiting', 'Waiting for database to become ready')
 
 @when('hive.valid')
-@when_not('hadoop.connected')
+@when_not('hdfs.related')
 def missing_hadoop():
-    hookenv.status_set('blocked', 'Waiting for relation to Hadoop')
+    hookenv.status_set('blocked', 'Waiting for relation to HDFS')
 
-@when('hive.valid', 'hadoop.connected')
-@when_not('hadoop.ready')
-def waiting_hadoop(hadoop):
-    hookenv.status_set('waiting', 'Waiting for Hadoop to become ready')
+@when('hive.valid', 'hdfs.related')
+@when_not('hdfs.ready')
+def waiting_hadoop(hdfs):
+    base_config = get_hadoop_base()
+    hdfs.set_spec(base_config.spec())
+    hookenv.status_set('waiting', "Waiting for HDFS to become ready at {}:{}".format(hdfs.ip_addr(), hdfs.port()))
 
+@when('hive.valid', 'hdfs.related', 'hdfs.spec.mismatch')
+@when_not('hdfs.ready')
+def spec_missmatch_hadoop(*args):
+    hookenv.status_set('blocked', "We have a spec mismatch between the underlying HDFS and the charm requirements")
 
-@when('hive.installed', 'hadoop.ready', 'database.available')
+@when('hive.installed', 'hdfs.ready', 'database.available')
 @when_not('hive.started')
-def start_hive(*args):
+def start_hive(hdfs, database):
     from charms.hive import Hive  # in lib/charms; not available until after bootstrap
+
+    hookenv.status_set('maintenance', 'Setting up Hadoop base files')
+    base_config = get_hadoop_base()
+    hadoop = HDFS(base_config)
+    hadoop.configure_hdfs_base(hdfs.ip_addr(), hdfs.port())
 
     hookenv.status_set('maintenance', 'Setting up Apache Hive')
     hive = Hive(dist_config())
     hive.setup_hive_config()
-    hive.configure_hive(args[1])
+    hive.configure_hive(database)
     hive.start()
     set_state('hive.started')
     hookenv.status_set('active', 'Ready')
 
 
 @when('hive.started')
-@when_not('hadoop.ready', 'database.available')
+@when_not('hdfs.ready', 'database.available')
 def stop_hive():
     from charms.hive import Hive  # in lib/charms; not available until after bootstrap
 
@@ -97,6 +110,8 @@ def stop_hive():
     hive.stop()
     remove_state('hive.started')
 
+    # TODO(kjackal): The semantics of when_not will change soon. Review the following, or split into multiple
+    # functions
     if not is_state('database.available') and not is_state('hadoop.ready'):
         hookenv.status_set('blocked', 'Waiting for haddop and database connections')
     elif not is_state('database.available'):

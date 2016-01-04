@@ -1,6 +1,6 @@
 name: apache-hive
 summary: Data warehouse infrastructure built on top of Hadoop
-maintainer: Kevin Monroe <kevin.monroe@canonical.com>
+maintainer: Big Data Team <bigdata@lists.ubuntu.com>
 description: |
   Apache Hive is a data warehouse infrastructure built on top of Hadoop that
   supports data summarization, query, and analysis. Hive provides an SQL-like
@@ -10,11 +10,11 @@ description: |
   Learn more at http://hive.apache.org
 tags: ["bigdata", "hadoop", "apache"]
 provides:
-  hadoop:
-    interface: hadoop-plugin
-    scope: container
   hive:
     interface: hive
 requires:
   database:
     interface: mysql
+  hdfs:
+    interface: hdfs
+    
