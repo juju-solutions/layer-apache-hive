@@ -10,8 +10,8 @@ This charm provides the Hive command line interface and the HiveServer2 service.
 
 
 ## Usage
-This charm is uses the hadoob base layer and the hdfs interface to pull its dependencies
-and act as a client to a hadoop namenode:
+This charm is uses the Hadoob base layer and the HDFS interface to pull its dependencies
+and act as a client to a Hadoop namenode:
 
 You may manually deploy the recommended environment as follows:
 
@@ -27,6 +27,10 @@ You may manually deploy the recommended environment as follows:
     juju deploy mysql
     juju set mysql binlog-format=ROW
 
+
+Deploy Hive charm:
+
+    juju deploy apache-hive hive
     juju add-relation hive namenode
     juju add-relation hive mysql
 

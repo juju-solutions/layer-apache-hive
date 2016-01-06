@@ -1,9 +1,6 @@
 import time
 import os
 import signal
-from glob import glob
-from path import Path
-from subprocess import CalledProcessError
 from subprocess import Popen
 
 import jujuresources
@@ -12,8 +9,13 @@ from charmhelpers.core import unitdata
 from jujubigdata import utils
 
 
-# Main Hive class for callbacks
 class Hive(object):
+    """
+    This class manages the deployment steps of Hive.
+    
+    :param DistConfig dist_config: The configuration container object needed.
+    """
+
     HIVE_VERSION = {'x86_64': '1.0.0', 'ppc64le': '0.13.0'}
 
     def __init__(self, dist_config):
@@ -28,6 +30,11 @@ class Hive(object):
         return unitdata.kv().get('hive.installed')
 
     def install(self, force=False):
+        '''
+        Create the users and directories. This method is to be called only once.
+        
+        :param bool force: Force the installation execution even if this is not the first installation attempt.
+        '''
         if not force and self.is_installed():
             return
         jujuresources.install(self.resources['hive'],
