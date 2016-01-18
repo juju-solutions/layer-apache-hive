@@ -15,6 +15,3 @@ provides:
 requires:
   database:
     interface: mysql
-  hdfs:
-    interface: hdfs
-    

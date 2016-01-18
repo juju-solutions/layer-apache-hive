@@ -1,1 +1,23 @@
-includes: ['layer:hadoop-base', 'interface:hdfs', 'interface:mysql']
+includes: ['layer:hadoop-client', 'interface:mysql']
+options:
+  hadoop-client:
+    packages:
+        - 'libmysql-java'
+        - 'mysql-client'
+    users:
+      hive:
+        groups: ['hadoop']
+    dirs:
+      hadoop:
+        path: '/usr/lib/hadoop'
+        perms: 0777
+      hive:
+        path: '/usr/lib/hive'
+        owner: 'hive'
+        group: 'hadoop'
+      hive_conf:
+        path: '/etc/hive/conf'
+    ports:
+      hive:
+        port: 10000
+        
