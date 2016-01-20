@@ -19,10 +19,13 @@ You may manually deploy the recommended environment as follows:
     juju deploy apache-hadoop-namenode namenode
     juju deploy apache-hadoop-nodemanager nodemgr
     juju deploy apache-hadoop-resourcemanager resourcemgr
+    juju deploy apache-hadoop-plugin plugin
 
     juju add-relation namenode datanode
     juju add-relation resourcemgr nodemgr
     juju add-relation resourcemgr namenode
+    juju add-relation plugin resourcemgr
+    juju add-relation plugin namenode
 
     juju deploy mysql
     juju set mysql binlog-format=ROW
@@ -31,7 +34,7 @@ You may manually deploy the recommended environment as follows:
 Deploy Hive charm:
 
     juju deploy apache-hive hive
-    juju add-relation hive namenode
+    juju add-relation hive plugin
     juju add-relation hive mysql
 
 Please note the special configuration for the mysql charm above; MySQL must be
