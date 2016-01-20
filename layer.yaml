@@ -8,9 +8,6 @@ options:
       hive:
         groups: ['hadoop']
     dirs:
-      hadoop:
-        path: '/usr/lib/hadoop'
-        perms: 0777
       hive:
         path: '/usr/lib/hive'
         owner: 'hive'
