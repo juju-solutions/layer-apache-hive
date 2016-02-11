@@ -99,7 +99,7 @@ def hue_joined(hive):
 @when('hue.ready')
 @when_not('hue.configured')
 def hue_ready(hive):
-    dist = get_dist_config
-    port = dist.ports('hive')
+    dist = get_dist_config()
+    port = dist.port('hive')
     hive.send_port(port)
     set_state('hue.configured')
