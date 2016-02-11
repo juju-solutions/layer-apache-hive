@@ -31,7 +31,7 @@ def install_hive(hadoop):
 
 
 @when('hive.installed')
-@when_none('hive.started','database.connected')
+@when_none('hive.started', 'database.connected')
 def missing_mysql():
     hive = Hive(get_dist_config())
     hive.new_db_connection()
@@ -39,13 +39,13 @@ def missing_mysql():
 
 
 @when('hive.installed', 'database.connected')
-@when_none('hive.started','database.available')
+@when_none('hive.started', 'database.available')
 def waiting_mysql(mysql):
     hookenv.status_set('waiting', 'Waiting for database to become ready')
 
 
-@when('hive.installed','database.available')
-@when_none('hive.started','hadoop.ready')
+@when('hive.installed', 'database.available')
+@when_none('hive.started', 'hadoop.ready')
 def waiting_hadoop(db):
     hookenv.status_set('waiting', "Waiting for HDFS to become ready")
 
@@ -91,3 +91,15 @@ def stop_hive_wait_hdfs(db):
     remove_state('hive.started')
     hookenv.status_set('blocked', 'Waiting for Hadoop connection')
 
+@when('hive.started', 'hue.joined')
+@when_not('hue.connected')
+def hue_joined(hive):
+    hive.set_ready()
+
+@when('hue.ready')
+@when_not('hue.configured')
+def hue_ready(hive):
+    dist = get_dist_config
+    port = dist.ports('hive')
+    hive.send_port(port)
+    set_state('hue.configured')

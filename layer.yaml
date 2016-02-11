@@ -1,4 +1,4 @@
-includes: ['layer:hadoop-client', 'interface:mysql']
+includes: ['layer:hadoop-client', 'interface:mysql', 'interface:hive']
 options:
   hadoop-client:
     packages:
@@ -17,4 +17,3 @@ options:
     ports:
       hive:
         port: 10000
-        
