@@ -100,7 +100,8 @@ def client_joined(hive):
     hive.send_port(port)
     set_state('client.configured')
 
-@when('hive.installed', 'client.departed')
-def client_departed():
+@when('hive.installed')
+@when_not('client.joined')
+def client_departed(hive):
     hive.clear_ready()
     remove_state('client.configured')
