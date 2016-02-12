@@ -91,7 +91,7 @@ def stop_hive_wait_hdfs(db):
     remove_state('hive.started')
     hookenv.status_set('blocked', 'Waiting for Hadoop connection')
 
-@when('hive.started', 'client.joined')
+@when('hive.installed', 'client.joined')
 @when_not('client.configured')
 def client_joined(hive):
     hive.set_ready()
@@ -99,3 +99,7 @@ def client_joined(hive):
     port = dist.port('hive')
     hive.send_port(port)
     set_state('client.configured')
+
+@when('hive.installed', 'client.departed')
+    hive.clear_ready()
+    remove_state('client.configured')
