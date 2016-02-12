@@ -10,7 +10,7 @@ description: |
   Learn more at http://hive.apache.org
 tags: ["bigdata", "hadoop", "apache"]
 provides:
-  hive:
+  client:
     interface: hive
 requires:
   database:
