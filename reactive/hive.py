@@ -102,6 +102,6 @@ def client_joined(hive):
 
 @when('hive.installed', 'client.configured')
 @when_not('client.joined')
-def client_departed(hive):
-    hive.clear_ready()
+def client_departed():
+    #hive.clear_ready()
     remove_state('client.configured')
