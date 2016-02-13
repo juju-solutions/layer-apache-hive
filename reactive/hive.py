@@ -94,7 +94,6 @@ def stop_hive_wait_hdfs(db):
 @when('hive.installed', 'client.joined')
 @when_not('client.configured')
 def client_joined(hive):
-    hive.set_ready()
     dist = get_dist_config()
     port = dist.port('hive')
     hive.send_port(port)
@@ -103,5 +102,4 @@ def client_joined(hive):
 @when('hive.installed', 'client.configured')
 @when_not('client.joined')
 def client_departed():
-    #hive.clear_ready()
     remove_state('client.configured')
