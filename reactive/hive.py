@@ -57,6 +57,7 @@ def start_hive(hdfs, database):
     hive = Hive(get_dist_config())
     hive.setup_hive_config()
     hive.configure_hive(database)
+    hive.open_ports()
     hive.start()
     set_state('hive.started')
     hookenv.status_set('active', 'Ready')
@@ -68,6 +69,7 @@ def stop_hive():
     hookenv.status_set('maintenance', 'Stopping Apache Hive')
     hive = Hive(get_dist_config())
     hive.stop()
+    hive.close_ports()
     remove_state('hive.started')
     hookenv.status_set('blocked', 'Waiting for Haddop and database connections')
 
@@ -78,6 +80,7 @@ def stop_hive_wait_db(hdfs):
     hookenv.status_set('maintenance', 'Stopping Apache Hive')
     hive = Hive(get_dist_config())
     hive.stop()
+    hive.close_ports()
     remove_state('hive.started')
     hookenv.status_set('blocked', 'Waiting for database connection')
 
@@ -88,6 +91,7 @@ def stop_hive_wait_hdfs(db):
     hookenv.status_set('maintenance', 'Stopping Apache Hive')
     hive = Hive(get_dist_config())
     hive.stop()
+    hive.close_ports()
     remove_state('hive.started')
     hookenv.status_set('blocked', 'Waiting for Hadoop connection')
 
