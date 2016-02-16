@@ -123,6 +123,14 @@ class Hive(object):
         e = utils.read_etc_env()
         Popen(['su', user, '-c', quoted], env=e)
 
+    def open_ports(self):
+        for port in self.dist_config.exposed_ports('hive'):
+            hookenv.open_port(port)
+
+    def close_ports(self):
+        for port in self.dist_config.exposed_ports('hive'):
+            hookenv.close_port(port)
+
     def start(self):
         self.stop()
         self.run_bg(

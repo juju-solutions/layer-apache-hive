@@ -17,3 +17,4 @@ options:
     ports:
       hive:
         port: 10000
+        exposed_on: 'hive'
