@@ -101,6 +101,7 @@ def client_joined(hive):
     dist = get_dist_config()
     port = dist.port('hive')
     hive.send_port(port)
+    hive.set_ready()
     set_state('client.configured')
 
 @when('hive.installed', 'client.configured')
