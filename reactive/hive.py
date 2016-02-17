@@ -64,13 +64,9 @@ def start_hive(hdfs, database):
     hookenv.status_set('active', 'Ready')
 
 
-@when('hive.installed', 'hadoop.ready', 'database.available', 'hive.started')
+@when('hive.installed', 'hadoop.ready', 'database.available', 'hive.started', 'config.changed.heap')
 def reconfigure_hive(hdfs, database):
     hookenv.status_set('active', 'Configuring Hive')
-    config = hookenv.config()
-    if not data_changed('configuration', config):
-        return
-
     hive = Hive(get_dist_config())
     hive.stop()
     hive.configure_hive(database)
