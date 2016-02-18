@@ -98,7 +98,6 @@ def stop_hive_wait_hdfs(db):
 
 
 @when('hive.installed', 'client.joined')
-@when_not('client.configured')
 def client_joined(hive):
     dist = get_dist_config()
     port = dist.port('hive')
