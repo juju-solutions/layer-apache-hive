@@ -3,6 +3,7 @@ from charms.reactive import set_state, remove_state
 from charmhelpers.core import hookenv
 from charms.hive import Hive
 from charms.hadoop import get_dist_config
+from charms.reactive.helpers import data_changed
 
 
 @when_not('hadoop.related')
@@ -61,6 +62,16 @@ def start_hive(hdfs, database):
     hive.open_ports()
     hive.start()
     set_state('hive.started')
+    hookenv.status_set('active', 'Ready')
+
+
+@when('hive.installed', 'hadoop.ready', 'database.available', 'hive.started', 'config.changed.heap')
+def reconfigure_hive(hdfs, database):
+    hookenv.status_set('active', 'Configuring Hive')
+    hive = Hive(get_dist_config())
+    hive.stop()
+    hive.configure_hive(database)
+    hive.start()
     hookenv.status_set('active', 'Ready')
 
 
