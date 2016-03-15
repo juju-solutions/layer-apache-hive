@@ -10,19 +10,19 @@ This charm provides the Hive command line interface and the HiveServer2 service.
 
 
 ## Usage
+
 This charm is uses the Hadoob base layer and the HDFS interface to pull its dependencies
 and act as a client to a Hadoop namenode:
 
 You may manually deploy the recommended environment as follows:
 
-    juju deploy apache-hadoop-datanode datanode
     juju deploy apache-hadoop-namenode namenode
-    juju deploy apache-hadoop-nodemanager nodemgr
     juju deploy apache-hadoop-resourcemanager resourcemgr
+    juju deploy apache-hadoop-slave slave
     juju deploy apache-hadoop-plugin plugin
 
-    juju add-relation namenode datanode
-    juju add-relation resourcemgr nodemgr
+    juju add-relation namenode slave
+    juju add-relation resourcemgr slave
     juju add-relation resourcemgr namenode
     juju add-relation plugin resourcemgr
     juju add-relation plugin namenode
@@ -44,6 +44,7 @@ using row-based logging for information to be replicated to Hadoop.
 ## Testing the deployment
 
 ### Smoke test Hive
+
 From the Hive unit, start the Hive console as the `hive` user:
 
     juju ssh hive/0
@@ -61,6 +62,7 @@ Exit from the Hive unit:
     exit
 
 ### Smoke test HiveServer2
+
 From the Hive unit, start the Beeline console as the `hive` user:
 
     juju ssh hive/0

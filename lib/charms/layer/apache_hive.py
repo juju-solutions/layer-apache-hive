@@ -12,7 +12,7 @@ from jujubigdata import utils
 class Hive(object):
     """
     This class manages the deployment steps of Hive.
-    
+
     :param DistConfig dist_config: The configuration container object needed.
     """
 
@@ -32,7 +32,7 @@ class Hive(object):
     def install(self, force=False):
         '''
         Create the users and directories. This method is to be called only once.
-        
+
         :param bool force: Force the installation execution even if this is not the first installation attempt.
         '''
         if not force and self.is_installed():
@@ -109,7 +109,7 @@ class Hive(object):
     def new_db_connection(self):
         if unitdata.kv().get('hive.schema.initialized'):
             unitdata.kv().set('hive.schema.initialized', False)
-    
+
 
     def run_bg(self, user, command, *args):
         """
@@ -147,4 +147,3 @@ class Hive(object):
     def cleanup(self):
         self.dist_config.remove_users()
         self.dist_config.remove_dirs()
-
