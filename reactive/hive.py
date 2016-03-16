@@ -2,16 +2,16 @@ from charms.reactive import when, when_not, when_none
 from charms.reactive import set_state, remove_state
 from charmhelpers.core import hookenv
 from charms.hive import Hive
-from charms.hadoop import get_dist_config
+from charms.layer.hadoop_client import get_dist_config
 from charms.reactive.helpers import data_changed
 
 
-@when_not('hadoop.related')
+@when_not('hadoop.ready')
 def report_blocked():
     hookenv.status_set('blocked', 'Waiting for relation to Hadoop Plugin')
 
 
-@when('hadoop.installed')
+@when('hadoop.ready')
 @when_not('hive.installed')
 def install_hive(hadoop):
     hookenv.status_set('maintenance', 'Installing base resources')
