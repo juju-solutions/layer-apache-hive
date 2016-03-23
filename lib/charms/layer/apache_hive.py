@@ -110,7 +110,6 @@ class Hive(object):
         if unitdata.kv().get('hive.schema.initialized'):
             unitdata.kv().set('hive.schema.initialized', False)
 
-
     def run_bg(self, user, command, *args):
         """
         Run a Hive command as the `hive` user in the background.
