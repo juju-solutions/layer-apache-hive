@@ -11,75 +11,43 @@ This charm provides the Hive command line interface and the HiveServer2 service.
 
 ## Usage
 
-This charm is uses the Hadoob base layer and the HDFS interface to pull its dependencies
-and act as a client to a Hadoop namenode:
+This charm is intended to be deployed via one of the
+[apache bundles](https://jujucharms.com/u/bigdata-charmers/#bundles).
+For example:
 
-You may manually deploy the recommended environment as follows:
+    juju quickstart apache-analytics-sql
 
-    juju deploy apache-hadoop-namenode namenode
-    juju deploy apache-hadoop-resourcemanager resourcemgr
-    juju deploy apache-hadoop-slave slave
-    juju deploy apache-hadoop-plugin plugin
-
-    juju add-relation namenode slave
-    juju add-relation resourcemgr slave
-    juju add-relation resourcemgr namenode
-    juju add-relation plugin resourcemgr
-    juju add-relation plugin namenode
-
-    juju deploy mysql
-    juju set mysql binlog-format=ROW
+This will deploy the Apache Hadoop platform with Apache Hive available to
+perform SQL-like queries against your data.
 
 
-Deploy Hive charm:
+## Status and Smoke Test
 
-    juju deploy apache-hive hive
-    juju add-relation hive plugin
-    juju add-relation hive mysql
+The services provide extended status reporting to indicate when they are ready:
 
-Please note the special configuration for the mysql charm above; MySQL must be
-using row-based logging for information to be replicated to Hadoop.
+    juju status --format=tabular
 
+This is particularly useful when combined with `watch` to track the on-going
+progress of the deployment:
 
-## Testing the deployment
+    watch -n 0.5 juju status --format=tabular
 
-### Smoke test Hive
+The message for each unit will provide information about that unit's state.
+Once they all indicate that they are ready, you can perform a "smoke test"
+to verify that Hive is working as expected using the built-in `smoke-test`
+action:
 
-From the Hive unit, start the Hive console as the `hive` user:
+    juju action do hive/0 smoke-test
 
-    juju ssh hive/0
-    sudo su hive -c hive
+After a few seconds or so, you can check the results of the smoke test:
 
-From the Hive console, verify sample commands execute successfully:
+    juju action status
 
-    show databases;
-    create table test(col1 int, col2 string);
-    show tables;
-    quit;
+You will see `status: completed` if the smoke test was successful, or
+`status: failed` if it was not.  You can get more information on why it failed
+via:
 
-Exit from the Hive unit:
-
-    exit
-
-### Smoke test HiveServer2
-
-From the Hive unit, start the Beeline console as the `hive` user:
-
-    juju ssh hive/0
-    sudo su hive -c beeline
-
-From the Beeline console, connect to HiveServer2 and verify sample commands
-execute successfully:
-
-    !connect jdbc:hive2://localhost:10000 hive password org.apache.hive.jdbc.HiveDriver
-    show databases;
-    create table test2(a int, b string);
-    show tables;
-    !quit
-
-Exit from the Hive unit:
-
-    exit
+    juju action fetch <action-id>
 
 
 ## Contact Information
